@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: stringMatcher
+
+location:
+  big-file-url: http://norvig.com/big.txt
+
+part:
+  max-part-size: 1000
