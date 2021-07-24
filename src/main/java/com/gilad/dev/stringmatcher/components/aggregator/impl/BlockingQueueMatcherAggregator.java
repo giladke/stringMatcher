@@ -11,16 +11,14 @@ import java.util.Optional;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Slf4j
 public class BlockingQueueMatcherAggregator implements MatcherAggregator {
 
-    private static final Predicate<Collection<LineMatch>> HAS_MATCHES = matches -> matches.stream().anyMatch(match-> match.getCharOffset().size() > 0);
+    public static final String LINE_FORMAT = "%s --> %s";
 
     private final CompletionService<Map<String, Collection<LineMatch>>> completionService;
-    public static final String LINE_FORMAT = "%s --> %s";
 
     public BlockingQueueMatcherAggregator(CompletionService<Map<String, Collection<LineMatch>>> completionService){
         this.completionService = completionService;
@@ -29,7 +27,7 @@ public class BlockingQueueMatcherAggregator implements MatcherAggregator {
     private Optional<Map<String, Collection<LineMatch>>> getResult(){
 
         try {
-            Future<Map<String, Collection<LineMatch>>> result = completionService.take();
+            Future<Map<String, Collection<LineMatch>>> result = completionService.take();   //blocking
             return Optional.ofNullable(result.get());
 
         } catch (InterruptedException | ExecutionException e) {
@@ -64,7 +62,7 @@ public class BlockingQueueMatcherAggregator implements MatcherAggregator {
         }
 
         return results.entrySet().stream()
-                .map(entry -> String.format(LINE_FORMAT, entry.getKey(), entry.getValue().stream().filter(match -> match.getCharOffset().size() > 0).collect(Collectors.toList())))
+                .map(entry -> String.format(LINE_FORMAT, entry.getKey(), entry.getValue().stream().filter(LineMatch.CONTAINS_MATCH).collect(Collectors.toList())))
                 .collect(Collectors.joining(System.lineSeparator()));
     }
 }

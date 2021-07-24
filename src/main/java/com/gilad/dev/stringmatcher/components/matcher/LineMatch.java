@@ -3,9 +3,13 @@ package com.gilad.dev.stringmatcher.components.matcher;
 import lombok.Value;
 
 import java.util.Set;
+import java.util.function.Predicate;
 
 @Value
 public class LineMatch {
+
+    public static final Predicate<LineMatch> CONTAINS_MATCH = match -> match.getCharOffset().size() > 0;
+
     int lineOffset;
     Set<Integer> charOffset;
 
