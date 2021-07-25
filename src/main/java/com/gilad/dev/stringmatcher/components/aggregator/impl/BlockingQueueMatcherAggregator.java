@@ -25,14 +25,14 @@ public class BlockingQueueMatcherAggregator implements MatcherAggregator {
     }
 
     private Optional<Map<String, Collection<LineMatch>>> getResult(){
-
+        //TODO consider timeout for this call to avoid starvation
         try {
             Future<Map<String, Collection<LineMatch>>> result = completionService.take();   //blocking
             return Optional.ofNullable(result.get());
 
         } catch (InterruptedException | ExecutionException e) {
             Thread.currentThread().interrupt();
-            log.info("issue occurred while processing");
+            log.info("issue occurred while processing", e);
             return Optional.empty();
         }
     }
