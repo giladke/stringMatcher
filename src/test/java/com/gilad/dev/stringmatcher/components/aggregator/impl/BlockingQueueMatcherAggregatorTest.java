@@ -15,6 +15,10 @@ import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import static org.hamcrest.CoreMatchers.anyOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class BlockingQueueMatcherAggregatorTest {
 
@@ -40,7 +44,7 @@ class BlockingQueueMatcherAggregatorTest {
     void asString_when_expectedMatchCount_positive_expect_formatted_result(){
         String aggregationResult = aggregator.asString(2);
 
-        Assertions.assertEquals(createExpectedFormatted(), aggregationResult);
+        assertThat(aggregationResult, anyOf(is(createExpectedFormatted()), is(createExpectedFormatted2())));
     }
 
     private void mockTake(Map<String, Collection<LineMatch>> data) throws InterruptedException, ExecutionException {
@@ -54,6 +58,11 @@ class BlockingQueueMatcherAggregatorTest {
     private String createExpectedFormatted(){
         return "bb --> [[lineOffset=15, charOffset=34], [lineOffset=1, charOffset=3]]"+System.lineSeparator()+
                 "aa --> [[lineOffset=1, charOffset=22]]";
+    }
+
+    private String createExpectedFormatted2(){
+        return "aa --> [[lineOffset=1, charOffset=22]]"+System.lineSeparator()+
+                "bb --> [[lineOffset=15, charOffset=34], [lineOffset=1, charOffset=3]]" ;
     }
 
     private Map<String, Collection<LineMatch>> initData() {
